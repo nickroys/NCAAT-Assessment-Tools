@@ -118,11 +118,36 @@ Write-Host "Unique file names found: $($uniqueNames.Count)" -ForegroundColor Cya
 $uniqueNames | ForEach-Object { Write-Host "  - $_" }
 
 # --------------------------------------------------------------------------
-# 6.  For each unique file name: create a new sheet and copy matching rows
+# 6.  Pre-count rows per file name so per-sheet progress is accurate
 # --------------------------------------------------------------------------
+$rowCountMap = @{}
+foreach ($name in $uniqueNames) { $rowCountMap[$name] = 0 }
+
+for ($r = 2; $r -le $totalRows; $r++) {
+    $val = $allValues[$r, $fileNameColIndex]
+    if (![string]::IsNullOrWhiteSpace($val)) {
+        $key = $val.ToString().Trim()
+        if ($rowCountMap.ContainsKey($key)) { $rowCountMap[$key]++ }
+    }
+}
+
+# --------------------------------------------------------------------------
+# 7.  For each unique file name: create a new sheet and copy matching rows
+# --------------------------------------------------------------------------
+$totalSheets  = $uniqueNames.Count
+$sheetCounter = 0
+
 foreach ($fileName in $uniqueNames) {
 
-    $sheetName = Get-SafeSheetName -Name $fileName
+    $sheetCounter++
+    $sheetName  = Get-SafeSheetName -Name $fileName
+    $overallPct = [math]::Round(($sheetCounter - 1) / $totalSheets * 100)
+
+    # -- Overall progress bar (ID 1) --
+    Write-Progress -Id 1 `
+        -Activity "Processing sheets" `
+        -Status "Sheet $sheetCounter of $totalSheets : $sheetName" `
+        -PercentComplete $overallPct
 
     # If a sheet with this name already exists, delete it first so we get
     # a clean copy (useful when re-running the script on the same file).
@@ -150,7 +175,9 @@ foreach ($fileName in $uniqueNames) {
     $srcHeaderRange.Copy($dstHeaderRange) | Out-Null
 
     # -- Copy matching data rows --
-    $destRow = 2
+    $destRow      = 2
+    $expectedRows = $rowCountMap[$fileName]
+    $copiedRows   = 0
 
     for ($r = 2; $r -le $totalRows; $r++) {
         $cellVal = $allValues[$r, $fileNameColIndex]
@@ -167,14 +194,30 @@ foreach ($fileName in $uniqueNames) {
             )
             $srcRowRange.Copy($dstRowRange) | Out-Null
             $destRow++
+            $copiedRows++
+
+            # -- Per-sheet progress bar (ID 2) --
+            if ($expectedRows -gt 0) {
+                $rowPct = [math]::Round($copiedRows / $expectedRows * 100)
+                Write-Progress -Id 2 -ParentId 1 `
+                    -Activity "Copying rows for: $sheetName" `
+                    -Status "Row $copiedRows of $expectedRows" `
+                    -PercentComplete $rowPct
+            }
         }
     }
+
+    # Clear the per-sheet bar when this sheet is done
+    Write-Progress -Id 2 -ParentId 1 -Activity "Copying rows for: $sheetName" -Completed
 
     # Auto-fit columns for readability
     $newSheet.UsedRange.EntireColumn.AutoFit() | Out-Null
 
-    Write-Host "  Created sheet '$sheetName' with $($destRow - 2) data rows." -ForegroundColor Green
+    Write-Host "  [Sheet $sheetCounter/$totalSheets] Created '$sheetName' -- $copiedRows rows" -ForegroundColor Green
 }
+
+# Clear the overall bar
+Write-Progress -Id 1 -Activity "Processing sheets" -Completed
 
 # --------------------------------------------------------------------------
 # 7.  Save and close
