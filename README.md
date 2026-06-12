@@ -6,7 +6,8 @@ Once you run the checklists through Vulnerator, it will produce an excel spreads
 
 ## Requirements
 1. Excel needs to be installed
-2. The `STIG Details` sheet needs to be named 'STIG Details'. This is what Vulnerator defaults to so do not change it
+2. Powershell execution po;icy should be set to `Bypass`
+3. The `STIG Details` sheet needs to be named 'STIG Details'. This is what Vulnerator defaults to so do not change it
 
 ## Options
 You can edit the script to filter by a different column by changing the `$fileNameColIndex` variable. Currently it is set to 19 to use the checklist name, but in the event that you wanted to filter sheets by a different column you could do so by changing this variable
