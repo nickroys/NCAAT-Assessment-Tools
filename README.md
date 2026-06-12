@@ -11,7 +11,7 @@ Once you run the checklists through Vulnerator, it will produce an excel spreads
 ## Running the tool
 Powershell will likely stop this script from running if the execution policy is not set to `Bypass`
 
-In order to run the script without permaently, open a Powershell terminal in the directory that the script is stored and use this command:
+In order to run the script without permaently changing your execution policy, open a Powershell terminal in the directory that the script is stored and use this command:
 ```powershell
 powershell.exe -ExecutionPolicy Bypass -File '.\STIG Details Creator.ps1'
 ```
