@@ -6,7 +6,7 @@ Once you run the checklists through Vulnerator, it will produce an excel spreads
 
 ## Requirements
 1. Excel needs to be installed
-2. Powershell execution po;icy should be set to `Bypass`
+2. Powershell execution policy should be set to `Bypass`
 3. The `STIG Details` sheet needs to be named 'STIG Details'. This is what Vulnerator defaults to so do not change it
 
 ## Options
