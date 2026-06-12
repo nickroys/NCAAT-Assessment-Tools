@@ -12,10 +12,10 @@ Once you run the checklists through Vulnerator, it will produce an excel spreads
 Powershell will likely stop this script from running if the execution policy is not set to `Bypass`
 
 In order to run the script without permaently, open a Powershell terminal in the directory that the script is stored and use this command:
-`powershell.exe -ExecutionPolicy Bypass -File .\STIG_Details_Creator_Interactive.ps1`
+```powershell.exe -ExecutionPolicy Bypass -File .\STIG_Details_Creator_Interactive.ps1```
 
 Then after it runs, double check that your execution policy has not channged:
-`Get-ExecutionPolicy`
+```Get-ExecutionPolicy```
 
 Leaving your Powershell execution policy set to `Bypass` is bad OPSEC and should be avoided at all costs
 
