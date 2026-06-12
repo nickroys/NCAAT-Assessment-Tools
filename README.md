@@ -13,7 +13,7 @@ Powershell will likely stop this script from running if the execution policy is 
 
 In order to run the script without permaently, open a Powershell terminal in the directory that the script is stored and use this command:
 ```powershell
-powershell.exe -ExecutionPolicy Bypass -File .\STIG_Details_Creator_Interactive.ps1
+powershell.exe -ExecutionPolicy Bypass -File '.\Split-STIGDetails.ps1'
 ```
 
 Then after it runs, double check that your execution policy has not channged:
